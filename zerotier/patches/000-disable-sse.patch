@@ -1,0 +1,18 @@
+--- a/make-linux.mk    	2015-01-30 17:42:58.410768731 -0500
++++ b/make-linux.mk	2015-01-30 17:46:18.758768980 -0500
+@@ -12,6 +12,7 @@
+ 
+ # Enable SSE-optimized Salsa20 on x86 and x86_64 machines
+ MACHINE=$(shell uname -m)
++ifndef CONFIG_NO_SSE
+ ifeq ($(MACHINE),x86_64)
+ 	DEFS+=-DZT_SALSA20_SSE 
+ endif
+@@ -30,6 +31,7 @@
+ ifeq ($(MACHINE),x86)
+ 	DEFS+=-DZT_SALSA20_SSE 
+ endif
++endif
+ 
+ # "make official" is a shortcut for this
+ ifeq ($(ZT_OFFICIAL_RELEASE),1)

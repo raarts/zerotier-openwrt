@@ -1,10 +1,25 @@
 #!/bin/sh /etc/rc.common
 
-START=95
+START=21
+STOP=89
+
+EXTRA_COMMANDS="info"
+EXTRA_HELP="        info    Show status of zerotier network"
+ 
+info() {
+	/usr/bin/zerotier-cli info
+}
 
 LIST_SEP="
 "
 ZT_COMMAND=/usr/bin/zerotier-one
+
+boot() {
+	mkdir -p /var/lib
+	mkdir -p /etc/zerotier-one
+	ln -sf /etc/zerotier-one /var/lib/zerotier-one
+	start        
+}
 
 section_enabled() {
 	config_get_bool enabled "$1" 'enabled' 0
@@ -24,7 +39,6 @@ start_instance() {
 	[ -n "$udp_port" ] && ARGS="$ARGS -p $udp_port"
 	[ -n "$tcp_port" ] && ARGS="$ARGS -t $tcp_port"
 
-	mkdir -p /var/lib/zerotier-one
 	eval service_start "'$ZT_COMMAND'" -d $ARGS
 
 	#wait for daemon to be ready
@@ -35,7 +49,7 @@ start_instance() {
 
 		config_get vl "$s" 'join'
 		for v in $vl; do
-			$ZT_COMMAND -q join '$v'
+			$ZT_COMMAND -q join "$v"
 		done
 	}
 
@@ -56,3 +70,4 @@ stop() {
 	config_load 'zerotier'
 	config_foreach stop_instance 'zerotier'
 }
+

@@ -9,8 +9,8 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=zerotier
 PKG_VERSION:=1.0.2
-PKG_REV:=045b47852d75c47754e2a2fad678e5f0c91fa7da
-PKG_RELEASE:=1
+PKG_REV:=95e303d6f316e4a929d119a4255c79cca5a8a6e6
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=git://github.com/mwarning/ZeroTierOne.git
@@ -25,7 +25,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/zerotier
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+libpthread +kmod-tun +ip +libstdcpp
+  DEPENDS:=+libpthread +kmod-tun +ip +libstdcpp +@SSP_SUPPORT +libssp
   TITLE:=ZeroTier
   URL:=https://www.zerotier.com
   SUBMENU:=VPN
@@ -45,6 +45,10 @@ define Package/zerotier/install
 	$(INSTALL_BIN) files/zerotier.init $(1)/etc/init.d/zerotier
 	$(INSTALL_DIR) $(1)/etc/config
 	$(INSTALL_CONF) files/zerotier.config $(1)/etc/config/zerotier
+endef
+
+define Build/Compile
+	$(call Build/Compile/Default,CONFIG_NO_SSE=1)
 endef
 
 $(eval $(call BuildPackage,zerotier))
